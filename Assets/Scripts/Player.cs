@@ -1,18 +1,24 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     public float speed = 5;
     public GameObject bulletPrefab;
+    public float cooldown = 0.5f;
+
+    [HideInInspector]public Vector3 shootInput;
 
     Rigidbody2D rb;
     Vector2 moveInput;
+    float lastShot = 0;
+    Action shoot;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        shoot = ShootBullet;
     }
 
     void Update()
@@ -20,19 +26,39 @@ public class Player : MonoBehaviour
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
 
-        var shootInput = new Vector3();
+        shootInput = new Vector3();
         shootInput.x = Input.GetAxisRaw("HorizontalArrow");
         shootInput.y = Input.GetAxisRaw("VerticalArrow");
 
-        if (shootInput != Vector3.zero)
+        if (shootInput != Vector3.zero && lastShot + cooldown <= Time.time)
         {
-            Instantiate(bulletPrefab, transform.position + shootInput, Quaternion.identity);
-        }
+            lastShot = Time.time;
 
+           shoot();
+        }
+    }
+
+    public void ShootBullet()
+    {
+        var bullet = Instantiate(bulletPrefab, transform.position + shootInput, Quaternion.identity);
+        bullet.GetComponent<Rigidbody2D>().velocity = shootInput * 15;
+        Destroy(bullet, 2);
     }
 
     private void FixedUpdate()
     {
         rb.MovePosition(rb.position + moveInput.normalized * speed * Time.fixedDeltaTime);
+    }
+
+    public void ChangeGun(Action newShoot, float duration)
+    {
+        StartCoroutine(ChangeGunCoroutine(newShoot, duration));
+    }
+
+    IEnumerator ChangeGunCoroutine(Action newShoot, float duration)
+    {
+        shoot = newShoot;
+        yield return new WaitForSeconds(duration);
+        shoot = ShootBullet;
     }
 }
