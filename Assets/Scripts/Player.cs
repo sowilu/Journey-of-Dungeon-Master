@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
 
         var shootInput = new Vector3();
         shootInput.x = Input.GetAxisRaw("HorizontalArrow");
-        shootInput.y = Input.GetAxisRaw("HorizontalArrow");
+        shootInput.y = Input.GetAxisRaw("VerticalArrow");
 
         if (shootInput != Vector3.zero)
         {
