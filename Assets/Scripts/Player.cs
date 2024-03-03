@@ -9,10 +9,12 @@ public class Player : MonoBehaviour
     public float speed = 5;
     public float cooldown = 0.1f;
 
+    [HideInInspector]
+    public Vector3 shootInput;
+
     private Action shoot;
     private Rigidbody2D rb;
     private Vector2 moveInput;
-    private Vector3 shootInput;
     private float lastShot = 0;
     
     void Start()
