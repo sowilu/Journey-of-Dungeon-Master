@@ -8,14 +8,14 @@ public class Shootgun : MonoBehaviour
     public float bulletSpeed = 15;
     public float effectDuration = 10;
 
-    private Player player;
+    protected Player player;
 
     private void Start()
     {
         player = FindObjectOfType<Player>();
     }
 
-    public void Shoot()
+    public virtual void Shoot()
     {
         var bullet = Instantiate(bulletPrefab, player.transform.position + player.shootInput, Quaternion.identity);
         bullet.GetComponent<Rigidbody2D>().velocity = player.shootInput * bulletSpeed;

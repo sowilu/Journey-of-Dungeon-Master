@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,12 +9,45 @@ public class Player : MonoBehaviour
     public GameObject bulletPrefab;
     public float cooldown = 0.5f;
 
-    [HideInInspector]public Vector3 shootInput;
+    [Header("UI")]
+    public TextMeshPro coinText;
+    public TextMeshPro liveText;
+
+    [HideInInspector] public Vector3 shootInput;
+    public int Lives
+    {
+        get
+        {
+            return lives;
+        }
+        set
+        {
+            lives = value;
+            liveText.text = "x " + lives;
+        }
+    }
+
+    public int Coins
+    {
+        get
+        {
+            return coins;
+        }
+        set
+        {
+            coins = value;
+            coinText.text = "x " + coins;
+        }
+    }
 
     Rigidbody2D rb;
     Vector2 moveInput;
     float lastShot = 0;
     Action shoot;
+    float originalSpeed;
+    int lives = 3;
+    int coins = 0;
+
 
     void Start()
     {
@@ -34,7 +68,7 @@ public class Player : MonoBehaviour
         {
             lastShot = Time.time;
 
-           shoot();
+            shoot();
         }
     }
 
@@ -60,5 +94,50 @@ public class Player : MonoBehaviour
         shoot = newShoot;
         yield return new WaitForSeconds(duration);
         shoot = ShootBullet;
+    }
+
+    public void ChangeSpeed(float newSpeed, float duration)
+    {
+        StartCoroutine(ChangeSpeedCoroutine(newSpeed, duration));
+    }
+
+    IEnumerator ChangeSpeedCoroutine(float newSpeed, float duration)
+    {
+        originalSpeed = speed;
+        speed = newSpeed;
+        yield return new WaitForSeconds(duration);
+        speed = originalSpeed;
+    }
+
+    public void ChangeCooldown(float newCooldown, float duration)
+    {
+        StartCoroutine(ChangeCooldownCoroutine(newCooldown, duration));
+    }
+
+    IEnumerator ChangeCooldownCoroutine(float newCooldown, float duration)
+    {
+        var originalCooldown = cooldown;
+        cooldown = newCooldown;
+        yield return new WaitForSeconds(duration);
+        cooldown = originalCooldown;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Coin"))
+        {
+            Coins++;
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Live"))
+        {
+            Lives++;
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Lives--;
+            //TODO: respawn
+        }
     }
 }
