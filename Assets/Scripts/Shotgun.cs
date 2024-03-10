@@ -35,7 +35,7 @@ public class Shotgun : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            player.ChangeShoot(Shoot, effectTime);
+            player.ChangeGun(Shoot, effectTime);
 
             transform.position = GameObject.Find("Inventory").transform.position;
 
