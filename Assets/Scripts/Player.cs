@@ -5,18 +5,44 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float speed = 5;
     public GameObject bulletPrefab;
-    public float cooldown = 0.5f;
+    public float speed = 5;
+    public float cooldown = 0.1f;
 
-    [HideInInspector] public Vector3 shootInput;
+    [HideInInspector]
+    public Vector3 shootInput;
+
+    [Header("UI")] 
+    public TextMeshPro coinText;
+    public TextMeshPro liveText;
+
+    public int Lives
+    {
+        get { return lives; }
+        set
+        {
+            lives = value;
+            liveText.text = "x " + lives;
+        } 
+    }
     
-    Rigidbody2D rb;
-    Vector2 moveInput;
-    float lastShot = 0;
-    Action shoot;
-    float originalSpeed;
-
+    public int Coins
+    {
+        get { return coins; }
+        set
+        {
+            coins = value;
+            coinText.text = "x " + coins;
+        }
+    }
+    
+    private int coins = 0;
+    private int lives = 3;
+    private Action shoot;
+    private Rigidbody2D rb;
+    private Vector2 moveInput;
+    private float lastShot = 0;
+    
 
     void Start()
     {
@@ -33,13 +59,14 @@ public class Player : MonoBehaviour
         shootInput.x = Input.GetAxisRaw("HorizontalArrow");
         shootInput.y = Input.GetAxisRaw("VerticalArrow");
 
-        if (shootInput != Vector3.zero && lastShot + cooldown <= Time.time)
+        if(shootInput != Vector3.zero && lastShot + cooldown <= Time.time)
         {
             lastShot = Time.time;
-
             shoot();
         }
     }
+    
+    
 
     public void ShootBullet()
     {
@@ -53,12 +80,13 @@ public class Player : MonoBehaviour
         rb.MovePosition(rb.position + moveInput.normalized * speed * Time.fixedDeltaTime);
     }
 
+
     public void ChangeGun(Action newShoot, float duration)
     {
-        StartCoroutine(ChangeGunCoroutine(newShoot, duration));
+        StartCoroutine(ChangeShootCoroutine(newShoot, duration));
     }
 
-    IEnumerator ChangeGunCoroutine(Action newShoot, float duration)
+    IEnumerator ChangeShootCoroutine(Action newShoot, float duration)
     {
         shoot = newShoot;
         yield return new WaitForSeconds(duration);
@@ -77,6 +105,36 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(duration);
         speed = oldSpeed;
     }
-
     
+    public void ChangeCooldown(float newCooldown, float duration)
+    {
+        StartCoroutine(ChangeCooldownCoroutine(newCooldown, duration));
+    }
+    
+    IEnumerator ChangeCooldownCoroutine(float newCooldown, float duration)
+    {
+        var oldCooldown = cooldown;
+        cooldown = newCooldown;
+        yield return new WaitForSeconds(duration);
+        cooldown = oldCooldown;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Coin"))
+        {
+            Coins++;
+            Destroy(other.gameObject);
+        }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            Lives--;
+            //TODO: respawn or die
+        }
+        else if (other.gameObject.CompareTag("Live"))
+        {
+            Lives++;
+            Destroy(other.gameObject);
+        }
+    }
 }
