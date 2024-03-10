@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class Player : MonoBehaviour
     [Header("UI")]
     public TextMeshPro coinText;
     public TextMeshPro liveText;
+
+    [Header("Animations")]
+    public Animator bodyAnimator;
+    public Animator legAnimator;
 
     [HideInInspector] public Vector3 shootInput;
     public int Lives
@@ -70,6 +75,10 @@ public class Player : MonoBehaviour
 
             shoot();
         }
+
+        legAnimator.SetFloat("speed", moveInput.magnitude);
+        bodyAnimator.SetInteger("leftRight", (int)shootInput.x);
+        bodyAnimator.SetInteger("upDown", (int)shootInput.y);
     }
 
     public void ShootBullet()
@@ -137,7 +146,19 @@ public class Player : MonoBehaviour
         else if (collision.gameObject.CompareTag("Enemy"))
         {
             Lives--;
-            //TODO: respawn
+            if(Lives > 0)
+            {
+                bodyAnimator.Play("Die");
+                var enemies = FindObjectsOfType<Enemy>();
+                foreach (var enemy in enemies)
+                {
+                    enemy.Die(false);
+                }
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
     }
 }
