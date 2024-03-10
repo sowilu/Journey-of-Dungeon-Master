@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class Player : MonoBehaviour
     public TextMeshPro coinText;
     public TextMeshPro liveText;
 
+    [Header("Animations")]
+    public Animator body;
+    public Animator legs;
+    
     public int Lives
     {
         get { return lives; }
@@ -64,6 +69,10 @@ public class Player : MonoBehaviour
             lastShot = Time.time;
             shoot();
         }
+        
+        legs.SetFloat("speed", moveInput.magnitude);
+        body.SetInteger("upDown", (int)shootInput.y);
+        body.SetInteger("leftRight", (int)shootInput.x);
     }
     
     
@@ -129,7 +138,23 @@ public class Player : MonoBehaviour
         else if (other.gameObject.CompareTag("Enemy"))
         {
             Lives--;
-            //TODO: respawn or die
+            if (Lives > 0)
+            {
+                //TODO: respawn animation
+                //find all enemies
+                var enemies = GameObject.FindObjectsOfType<Enemy>();
+                foreach (var enemy in enemies)
+                {
+                    enemy.Die(false);
+                }
+                body.Play("Die");
+            }
+            else
+            {
+                //TODO: game over screen
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+            
         }
         else if (other.gameObject.CompareTag("Live"))
         {

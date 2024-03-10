@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7228217993792496208}
   - component: {fileID: 3983607192430258877}
   - component: {fileID: 4027711841288547866}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Shotgun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 58248847, guid: 5be91016b66bd402badbad2a6c12d781, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -143,6 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a8f23f5221324f36a4d3428d0ec69a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 6342361743701780293, guid: cb06059c5bf2745019bcd207eb81f868, type: 3}
+  bulletPrefab: {fileID: 4066977031624953995, guid: cb06059c5bf2745019bcd207eb81f868, type: 3}
   bulletSpeed: 15
   effectDuration: 10
